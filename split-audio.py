@@ -14,14 +14,21 @@ pipeline = Pipeline.from_pretrained(
 pipeline.to(torch.device("mps"))
 
 # apply pretrained pipeline (with optional progress hook)
-with ProgressHook() as hook:
-    diarization = pipeline(FILE_NAME, hook=hook)
+# List all audio files in the folder
+audio_files = [f"./audio/{f}" for f in os.listdir("./audio/") if f.endswith(".mp3")]
 
-audio = AudioSegment.from_mp3(FILE_NAME)
+# Transcribe each file
+for file_name in audio_files:
+  with ProgressHook() as hook:
+      diarization = pipeline(file_name, hook=hook)
 
-# print the result
-for i, (turn, _, speaker) in enumerate(diarization.itertracks(yield_label=True)):
-    segment = audio[int(turn.start * 1000): int(turn.end * 1000)]
-    segment.export(f"speaker_{speaker}_segment_{i}.wav", format="wav")
+  audio = AudioSegment.from_mp3(file_name)
+
+  # print the result
+  for i, (turn, _, speaker) in enumerate(diarization.itertracks(yield_label=True)):
+      if turn.duration < 0.5:
+          continue
+      segment = audio[int(turn.start * 1000): int(turn.end * 1000)]
+      segment.export(f"./audio/splitted/{file_name.replace("./audio/", "")}_speaker_{speaker}_segment_{i}.wav", format="wav")
 
 

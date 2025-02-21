@@ -1,5 +1,5 @@
-agenda_point,start_time,end_time,url
-4,00:34:00,00:36:30,https://www.youtube.com/watch?v=bY2Dl8HsZIE
-8.1,00:59:50,01:00:30,https://www.youtube.com/watch?v=bY2Dl8HsZIE
-11.1,01:48:30,01:50:55,https://www.youtube.com/watch?v=bY2Dl8HsZIE
-12.1,02:08:25,02:10:50,https://www.youtube.com/watch?v=bY2Dl8HsZIE
+agenda_point,Question start,Question end,start_time,end_time,url
+4,00:34:00,00:36:30,2040,2190,https://www.youtube.com/watch?v=bY2Dl8HsZIE
+8.1,00:59:50,01:00:30,3590,3630,https://www.youtube.com/watch?v=bY2Dl8HsZIE
+11.1,01:48:30,01:50:55,6510,6655,https://www.youtube.com/watch?v=bY2Dl8HsZIE
+12.1,02:08:25,02:10:50,7705,7850,https://www.youtube.com/watch?v=bY2Dl8HsZIE
