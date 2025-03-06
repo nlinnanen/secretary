@@ -79,7 +79,7 @@ def seconds_to_hms(seconds):
     seconds %= 60
     return f"{hours}h{minutes}m{seconds}s"
 
-def write_to_csv(transcription, agenda_point, segment):
+def append_to_csv(transcription, agenda_point, segment):
     with open("./transcriptions.csv", mode="a", newline="", encoding='utf-8') as file:
         writer = csv.writer(file)
         start_of_segment = seconds_to_hms(float(agenda_point['start_time']) + float(segment['start']))
@@ -93,11 +93,13 @@ def process_csv(csv_file):
         agenda_point_files = []
         for row in reader:
             file_name = f"./audio/youtube/{row['url'].split('=')[-1]}.mp3"
+
             download_audio_if_not_exists(
                 row['url'], file_name)
-            print(f"Downloaded {file_name}")
+
             path = split_audio_by_agenda_points_if_not_exists(
                 file_name, row['start_time'], row['end_time'], row['agenda_point'])
+            
             agenda_point_files.append({"path": path, "row": row})
             
 
@@ -107,7 +109,7 @@ def process_csv(csv_file):
         segments = split_audio_by_speaker(file_name)
         for segment in segments:
             transcription = transcribe_audio(segment['path'])
-            write_to_csv(transcription, row, segment)
+            append_to_csv(transcription, row, segment)
 
 
 if __name__ == "__main__":
