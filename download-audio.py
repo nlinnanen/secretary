@@ -33,15 +33,15 @@ def download_audio_if_not_exists(url, file_name):
         ydl.download([url])
 
 
-def split_audio_by_agenda_points(audio_file, start_time, end_time, agenda_point):
+def split_audio_by_agenda_points_if_not_exists(audio_file, start_time, end_time, agenda_point):
     print(f"Splitting {audio_file} from {start_time} to {end_time}")
-    # Ensure directory exists
     output_dir = "./audio/agenda_points"
-    os.makedirs(output_dir, exist_ok=True)
-
+    output_path = os.path.join(output_dir, f"ap_{agenda_point}_{start_time}.mp3")
+    if os.path.exists(output_path):
+        print(f"File {output_path} already exists")
+        return output_path
     audio = AudioSegment.from_mp3(audio_file)
     segment = audio[int(start_time)*1000: int(end_time)*1000]
-    output_path = os.path.join(output_dir, f"ap_{agenda_point}.mp3")
     segment.export(output_path, format="mp3")
     return output_path
 
@@ -82,7 +82,7 @@ def seconds_to_hms(seconds):
 def write_to_csv(transcription, agenda_point, segment):
     with open("./transcriptions.csv", mode="a", newline="", encoding='utf-8') as file:
         writer = csv.writer(file)
-        start_of_segment = seconds_to_hms(agenda_point['start_time'] + segment['start'])
+        start_of_segment = seconds_to_hms(float(agenda_point['start_time']) + float(segment['start']))
         link_with_time = f"{agenda_point['url']}&t={start_of_segment}"
         writer.writerow([agenda_point['agenda_point'],segment['speaker'],start_of_segment,link_with_time, transcription])
 
@@ -96,7 +96,7 @@ def process_csv(csv_file):
             download_audio_if_not_exists(
                 row['url'], file_name)
             print(f"Downloaded {file_name}")
-            path = split_audio_by_agenda_points(
+            path = split_audio_by_agenda_points_if_not_exists(
                 file_name, row['start_time'], row['end_time'], row['agenda_point'])
             agenda_point_files.append({"path": path, "row": row})
             
@@ -111,5 +111,10 @@ def process_csv(csv_file):
 
 
 if __name__ == "__main__":
-    csv_file = "test.csv"  # CSV file name
+    csv_file = "letsgo.csv"  # CSV file name
+    # create the folders
+    os.makedirs("./audio/youtube", exist_ok=True)
+    os.makedirs("./audio/speakers", exist_ok=True)
+    os.makedirs("./audio/agenda_points", exist_ok=True)
+
     process_csv(csv_file)
